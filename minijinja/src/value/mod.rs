@@ -1439,4 +1439,9 @@ mod tests {
     fn test_sizes() {
         assert_eq!(std::mem::size_of::<Value>(), 24);
     }
+
+    #[test]
+    fn test_fmt_display_for_value() {
+        assert_eq!("1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000.0", format!("{}", Value(ValueRepr::F64(1e99))));
+    }
 }
