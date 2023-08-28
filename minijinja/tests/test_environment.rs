@@ -293,3 +293,30 @@ fn test_list_literal() {
     let tmpl = env.get_template("test.html").unwrap();
     assert_eq!(tmpl.render(()).unwrap(), "[None, \"あ\"]");
 }
+
+#[test]
+fn test_unique_ok() {
+    let mut env = Environment::new();
+    env.add_template(
+        "test.html",
+        "{% autoescape 'none' %}{{ ['foo', 'bar', 'foobar', 'foobar']|unique }}{% endautoescape %}",
+    )
+    .unwrap();
+    let tmpl = env.get_template("test.html").unwrap();
+    assert_eq!(tmpl.render(()).unwrap(), "[\"foo\", \"bar\", \"foobar\"]");
+}
+
+#[test]
+fn test_unique_is_case_sensitive() {
+    let mut env = Environment::new();
+    env.add_template(
+        "test.html",
+        "{% autoescape 'none' %}{{ ['foo', 'bar', 'foobar', 'FooBar']|unique }}{% endautoescape %}",
+    )
+    .unwrap();
+    let tmpl = env.get_template("test.html").unwrap();
+    assert_eq!(
+        tmpl.render(()).unwrap(),
+        "[\"foo\", \"bar\", \"foobar\", \"FooBar\"]"
+    );
+}
