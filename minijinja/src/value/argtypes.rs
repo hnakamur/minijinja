@@ -198,6 +198,8 @@ macro_rules! tuple_impls {
             fn from_values(state: Option<&'a State>, mut values: &'a [Value]) -> Result<Self::Output, Error> {
                 #![allow(non_snake_case, unused)]
                 $( let $name; )*
+                $( eprintln!("tmpl_impls from_values name={:?} type={}", stringify!($name), std::any::type_name::<$name::Output>()); )*
+                eprintln!("tmple_impls from_values: rest_name={:?} type={}", stringify!($rest_name), std::any::type_name::<$rest_name::Output>());
                 let mut $rest_name = None;
                 let mut idx = 0;
 
@@ -239,6 +241,7 @@ impl<'a> FunctionArgs<'a> for () {
     type Output = ();
 
     fn from_values(_state: Option<&'a State>, values: &'a [Value]) -> Result<Self::Output, Error> {
+        eprintln!("from_values for (), values={:?}", values);
         if values.is_empty() {
             Ok(())
         } else {
@@ -485,6 +488,7 @@ impl<'a> ArgType<'a> for &str {
     type Output = &'a str;
 
     fn from_value(value: Option<&'a Value>) -> Result<Self::Output, Error> {
+        eprintln!("str from_value opt value: {:?}", value);
         match value {
             Some(value) => value
                 .as_str()
@@ -498,6 +502,7 @@ impl TryFrom<Value> for Arc<str> {
     type Error = Error;
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
+        eprintln!("str try_from opt value: {:?}", value);
         match value.0 {
             ValueRepr::String(x, _) => Ok(x),
             _ => Err(Error::new(
@@ -512,6 +517,7 @@ impl<'a> ArgType<'a> for Arc<str> {
     type Output = Arc<str>;
 
     fn from_value(value: Option<&'a Value>) -> Result<Self::Output, Error> {
+        eprintln!("Arc<str> from_value opt value: {:?}", value);
         match value {
             Some(value) => TryFrom::try_from(value.clone()),
             None => Err(Error::from(ErrorKind::MissingArgument)),
@@ -575,6 +581,7 @@ impl<'a> ArgType<'a> for Cow<'_, str> {
 
     #[inline(always)]
     fn from_value(value: Option<&'a Value>) -> Result<Cow<'a, str>, Error> {
+        eprintln!("Cow<'_, str> from_value opt value: {:?}", value);
         match value {
             Some(value) => Ok(match value.0 {
                 ValueRepr::String(ref s, _) => Cow::Borrowed(s as &str),
@@ -590,6 +597,7 @@ impl<'a> ArgType<'a> for &Value {
 
     #[inline(always)]
     fn from_value(value: Option<&'a Value>) -> Result<&'a Value, Error> {
+        eprintln!("Value from_value opt value: {:?}", value);
         match value {
             Some(value) => Ok(value),
             None => Err(Error::from(ErrorKind::MissingArgument)),
@@ -994,6 +1002,13 @@ mod tests {
         let v = Value::from(42.5);
         let f: f64 = v.try_into().unwrap();
         assert_eq!(f, 42.5);
+    }
+
+    #[test]
+    fn test_i128_from_value() {
+        assert_eq!(i128::MAX, i128::try_from(Value(ValueRepr::U128(Packed(i128::MAX as u128)))).unwrap());
+        assert!(i128::try_from(Value(ValueRepr::U128(Packed(i128::MAX as u128 + 1)))).is_err());
+        assert!(i128::try_from(Value(ValueRepr::U128(Packed(u128::MAX)))).is_err());
     }
 
     #[test]

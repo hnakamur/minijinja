@@ -1443,5 +1443,6 @@ mod tests {
     #[test]
     fn test_fmt_display_for_value() {
         assert_eq!("1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000.0", format!("{}", Value(ValueRepr::F64(1e99))));
+        assert_eq!("false", format!("{}", Value(ValueRepr::Bool(false))));
     }
 }

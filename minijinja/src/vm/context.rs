@@ -203,6 +203,7 @@ impl<'env> Context<'env> {
 
     /// Stores a variable in the context.
     pub fn store(&mut self, key: &'env str, value: Value) {
+        eprintln!("Context.store, key={key}, value={value}");
         let top = self.stack.last_mut().unwrap();
         if let Some(ref closure) = top.closure {
             closure.store(key, value.clone());

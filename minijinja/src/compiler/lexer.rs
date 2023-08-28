@@ -216,6 +216,7 @@ impl<'s> TokenizerState<'s> {
     }
 
     fn eat_number(&mut self) -> Result<(Token<'s>, Span), Error> {
+        eprintln!("eat_number start");
         #[derive(Copy, Clone)]
         enum State {
             Integer,      // 123
@@ -245,6 +246,7 @@ impl<'s> TokenizerState<'s> {
         let is_float = !matches!(state, State::Integer);
 
         let num = self.advance(num_len);
+        dbg!(num);
         Ok((
             ok!(if is_float {
                 num.parse()

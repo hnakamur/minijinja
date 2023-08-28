@@ -135,3 +135,133 @@ fn test_keep_trailing_newlines() {
     );
     assert_eq!(env.render_str("blub\r\n", ()).unwrap(), "blub\r\n");
 }
+
+#[test]
+fn test_id_string_true() {
+    let mut env = Environment::new();
+    env.add_global("string", Value::from("aha"));
+    env.add_template("test", "{{ string is string }}").unwrap();
+    let tmpl = env.get_template("test").unwrap();
+    assert_eq!(tmpl.render(()).unwrap(), "true");
+}
+
+#[test]
+fn test_startingwith_true() {
+    let mut env = Environment::new();
+    env.add_global("string", Value::from("aha"));
+    env.add_template("test", "{{ string is startingwith('a') }}")
+        .unwrap();
+    let tmpl = env.get_template("test").unwrap();
+    assert_eq!(tmpl.render(()).unwrap(), "true");
+}
+
+#[test]
+fn test_macro_call() {
+    let mut env = Environment::new();
+    env.add_global("string", Value::from("aha"));
+    env.add_template(
+        "test",
+        "{% macro dialog(title) %}
+              <div class=\"dialog\">
+                <h3>{{ title }}</h3>
+                <div class=\"contents\">{{ caller() }}</div>
+              </div>
+            {% endmacro %}
+            {% call dialog(title=\"Hello World\") %}
+              This is the dialog body.
+            {% endcall %}",
+    )
+    .unwrap();
+    let tmpl = env.get_template("test").unwrap();
+    assert_eq!(tmpl.render(()).unwrap(), "true");
+}
+
+#[test]
+fn test_for_loop_else() {
+    let mut env = Environment::new();
+    env.add_template(
+        "test",
+        "{% for name in names %}{{ name }} {% else %}no users{% endfor %}",
+    )
+    .unwrap();
+    let tmpl = env.get_template("test").unwrap();
+    assert_eq!(tmpl.render(()).unwrap(), "no users");
+}
+
+#[test]
+fn test_sc_and_false_false() {
+    let mut env = Environment::new();
+    env.add_template("test", "{{ false and false }}").unwrap();
+    let tmpl = env.get_template("test").unwrap();
+    assert_eq!(tmpl.render(()).unwrap(), "false");
+}
+
+#[test]
+fn test_range() {
+    let mut env = Environment::new();
+    env.add_template("test", "{{ range(3) }}").unwrap();
+    let tmpl = env.get_template("test").unwrap();
+    assert_eq!(tmpl.render(()).unwrap(), "[0, 1, 2]");
+}
+
+#[test]
+fn test_extends_and_block() {
+    let mut env = Environment::new();
+    env.add_global("string", Value::from("aha"));
+    env.add_template(
+        "child.html",
+        "{% extends \"base.html\" %}
+{% block title %}Index{% endblock %}
+{% block head %}
+{{ super() }}
+<style type=\"text/css\">
+.important { color: #336699; }
+</style>
+{% endblock %}
+{% block body %}
+<h1>Index</h1>
+<p class=\"important\">
+Welcome to my awesome homepage.
+</p>
+{% endblock %}",
+    )
+    .unwrap();
+    env.add_template(
+        "base.html",
+        "<!doctype html>
+{% block head %}
+<title>{% block title %}{% endblock %}</title>
+{% endblock %}
+{% block body %}{% endblock %}",
+    )
+    .unwrap();
+    let tmpl = env.get_template("child.html").unwrap();
+    assert_eq!(
+        tmpl.render(()).unwrap(),
+        "<!doctype html>
+
+
+<title>Index</title>
+
+<style type=\"text/css\">
+.important { color: #336699; }
+</style>
+
+
+<h1>Index</h1>
+<p class=\"important\">
+Welcome to my awesome homepage.
+</p>
+"
+    );
+}
+
+#[test]
+fn test_parse_i64_min_err() {
+    let mut env = Environment::new();
+    // This causes an syntax error since minus and number are parsed separately
+    // and 9223372036854775808 is greater than i64::MAX = 9223372036854775807.
+    assert!(env
+        .add_template("test", "{{ -9223372036854775808 }}")
+        .is_err());
+}

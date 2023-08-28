@@ -553,7 +553,10 @@ impl<'a> Call<'a> {
     /// thing.
     pub fn identify_call(&self) -> CallType<'_, 'a> {
         match self.expr {
-            Expr::Var(ref var) => CallType::Function(var.id),
+            Expr::Var(ref var) => {
+                eprintln!("identify_call function id={}", var.id);
+                CallType::Function(var.id)
+            }
             Expr::GetAttr(ref attr) => {
                 #[cfg(feature = "multi_template")]
                 {
@@ -563,9 +566,13 @@ impl<'a> Call<'a> {
                         }
                     }
                 }
+                eprintln!("identify_call method name={}", attr.name);
                 CallType::Method(&attr.expr, attr.name)
             }
-            _ => CallType::Object(&self.expr),
+            _ => {
+                eprintln!("identify_call object");
+                CallType::Object(&self.expr)
+            }
         }
     }
 }

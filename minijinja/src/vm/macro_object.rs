@@ -56,6 +56,7 @@ impl Object for Macro {
             ));
         }
 
+        eprintln!("Macro.call, name={}", self.data.name);
         let (args, kwargs) = match args.last() {
             Some(Value(ValueRepr::Map(kwargs, MapType::Kwargs))) => {
                 (&args[..args.len() - 1], Some(kwargs))
@@ -83,6 +84,7 @@ impl Object for Macro {
                 }
                 (Some(arg), None) => arg.clone(),
                 (None, Some(kwarg)) => {
+                    eprintln!("add name={} to kwargs_used", name);
                     kwargs_used.insert(name as &str);
                     kwarg.clone()
                 }

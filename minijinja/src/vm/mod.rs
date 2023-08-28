@@ -419,7 +419,15 @@ impl<'env> Vm<'env> {
                 }
                 Instruction::Iterate(jump_target) => {
                     let l = state.ctx.current_loop().unwrap();
+                    eprintln!(
+                        "Instruction::Iterate idx#1={}",
+                        l.object.idx.load(Ordering::Relaxed)
+                    );
                     l.object.idx.fetch_add(1, Ordering::Relaxed);
+                    eprintln!(
+                        "Instruction::Iterate idx#2={}",
+                        l.object.idx.load(Ordering::Relaxed)
+                    );
 
                     let next = {
                         #[cfg(feature = "adjacent_loop_items")]
@@ -445,6 +453,10 @@ impl<'env> Vm<'env> {
                 }
                 Instruction::PushDidNotIterate => {
                     let l = state.ctx.current_loop().unwrap();
+                    eprintln!(
+                        "PushDidNotIterate idx={}",
+                        l.object.idx.load(Ordering::Relaxed)
+                    );
                     stack.push(Value::from(l.object.idx.load(Ordering::Relaxed) == 0));
                 }
                 Instruction::Jump(jump_target) => {
@@ -523,8 +535,10 @@ impl<'env> Vm<'env> {
                     stack.push(Value::from(rv));
                 }
                 Instruction::CallFunction(name, arg_count) => {
+                    eprintln!("Instruction::CallFunction name={name}");
                     // super is a special function reserved for super-ing into blocks.
                     if *name == "super" {
+                        eprintln!("Instruction::CallFunction name={name} is super!!!!!!!!!!!!");
                         if *arg_count != 0 {
                             bail!(Error::new(
                                 ErrorKind::InvalidOperation,
@@ -632,7 +646,10 @@ impl<'env> Vm<'env> {
                     self.build_macro(&mut stack, state, *offset, name, *flags);
                 }
                 #[cfg(feature = "macros")]
-                Instruction::Return => break,
+                Instruction::Return => {
+                    eprintln!("Instruction::Return");
+                    break;
+                }
                 #[cfg(feature = "macros")]
                 Instruction::Enclose(name) => {
                     state.ctx.enclose(state.env, name);

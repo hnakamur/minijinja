@@ -284,6 +284,26 @@ mod tests {
     use similar_asserts::assert_eq;
 
     #[test]
+    fn test_as_f64() {
+        assert_eq!(Some(1.0), as_f64(&Value(ValueRepr::Bool(true))));
+        assert_eq!(Some(0.0), as_f64(&Value(ValueRepr::Bool(false))));
+    }
+
+    #[test]
+    fn test_coerce() {
+        match coerce(
+            &Value(ValueRepr::I64(0i64)),
+            &Value(ValueRepr::U64(u64::MAX)),
+        ) {
+            Some(CoerceResult::I128(lhs, rhs)) => {
+                assert_eq!(0i128, lhs);
+                assert_eq!(u64::MAX as i128, rhs);
+            }
+            _ => unreachable!(),
+        }
+    }
+
+    #[test]
     fn test_adding() {
         let err = add(&Value::from("a"), &Value::from(42)).unwrap_err();
         assert_eq!(

@@ -998,11 +998,24 @@ impl<'a> Parser<'a> {
         defaults: Vec<ast::Expr<'a>>,
         name: Option<&'a str>,
     ) -> Result<ast::Macro<'a>, Error> {
+        eprintln!("parse_macro_or_call_block_body name={:?}", name);
         expect_token!(self, Token::BlockEnd, "end of block");
         let old_in_macro = std::mem::replace(&mut self.in_macro, true);
         let body = ok!(self.subparse(&|tok| match tok {
-            Token::Ident("endmacro") if name.is_some() => true,
-            Token::Ident("endcall") if name.is_none() => true,
+            Token::Ident("endmacro") if name.is_some() => {
+                eprintln!(
+                    "parse_macro_or_call_block_body found endmacro name={:?}",
+                    name
+                );
+                true
+            }
+            Token::Ident("endcall") if name.is_none() => {
+                eprintln!(
+                    "parse_macro_or_call_block_body found endcall name={:?}",
+                    name
+                );
+                true
+            }
             _ => false,
         }));
         self.in_macro = old_in_macro;

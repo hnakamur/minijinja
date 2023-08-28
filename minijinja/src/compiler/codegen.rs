@@ -408,6 +408,7 @@ impl<'source> CodeGenerator<'source> {
         if caller_reference {
             flags |= MACRO_CALLER;
         }
+        eprintln!("codegen Buildmacro name={}", macro_decl.name);
         self.add(Instruction::BuildMacro(macro_decl.name, instr + 1, flags));
         if let Some(Instruction::Jump(ref mut target)) = self.instructions.get_mut(instr) {
             *target = macro_instr;
@@ -424,6 +425,7 @@ impl<'source> CodeGenerator<'source> {
 
     #[cfg(feature = "macros")]
     fn compile_call_block(&mut self, call_block: &ast::Spanned<ast::CallBlock<'source>>) {
+        eprintln!("compile_call_block");
         self.compile_call(&call_block.call, Some(&call_block.macro_decl));
         self.add(Instruction::Emit);
     }
@@ -670,6 +672,7 @@ impl<'source> CodeGenerator<'source> {
         match c.identify_call() {
             ast::CallType::Function(name) => {
                 let arg_count = self.compile_call_args(&c.args, caller);
+                eprintln!("compile_all name={name}, arg_count={arg_count}");
                 self.add(Instruction::CallFunction(name, arg_count));
             }
             #[cfg(feature = "multi_template")]
@@ -730,6 +733,7 @@ impl<'source> CodeGenerator<'source> {
                 self.add(Instruction::LoadConst(Value::from("caller")));
                 self.compile_macro_expression(caller);
                 self.add(Instruction::BuildKwargs(m.pairs.len() + 1));
+                eprintln!("compile_call_args_with_caller injected caller");
                 injected_caller = true;
             } else {
                 self.compile_expr(arg);
@@ -742,6 +746,7 @@ impl<'source> CodeGenerator<'source> {
             self.add(Instruction::LoadConst(Value::from("caller")));
             self.compile_macro_expression(caller);
             self.add(Instruction::BuildKwargs(1));
+            eprintln!("compile_call_args_with_caller !injected_caller");
             args.len() + 1
         } else {
             args.len()
@@ -802,5 +807,13 @@ impl<'source> CodeGenerator<'source> {
     ) {
         assert!(self.pending_block.is_empty());
         (self.instructions, self.blocks)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_u8_not_zero() {
+        assert_eq!(255u8, !(0u8));
     }
 }

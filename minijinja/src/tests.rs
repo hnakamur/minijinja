@@ -186,6 +186,7 @@ impl BoxedTest {
         Args: for<'a> FunctionArgs<'a>,
     {
         BoxedTest(Arc::new(move |state, args| -> Result<bool, Error> {
+            eprintln!("BoxTest::new, args={:?}", args);
             f.perform(ok!(Args::from_values(Some(state), args)), SealedMarker)
                 .into_result()
         }))
@@ -193,6 +194,7 @@ impl BoxedTest {
 
     /// Applies the filter to a value and argument.
     pub fn perform(&self, state: &State, args: &[Value]) -> Result<bool, Error> {
+        eprintln!("BoxTest.perform, args={:?}", args);
         (self.0)(state, args)
     }
 }
@@ -316,6 +318,7 @@ mod builtins {
     /// ```
     #[cfg_attr(docsrs, doc(cfg(feature = "builtins")))]
     pub fn is_startingwith(v: Cow<'_, str>, other: Cow<'_, str>) -> bool {
+        eprintln!("is_startingwith v={:?}, other={:?}", v, other);
         v.starts_with(&other as &str)
     }
 
