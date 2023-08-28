@@ -265,3 +265,31 @@ fn test_parse_i64_min_err() {
         .add_template("test", "{{ -9223372036854775808 }}")
         .is_err());
 }
+
+#[test]
+fn test_first_filter_for_str() {
+    let mut env = Environment::new();
+    env.add_template("test", "{{ 'あいう'|first }}").unwrap();
+    let tmpl = env.get_template("test").unwrap();
+    assert_eq!(tmpl.render(()).unwrap(), "あ");
+}
+
+#[test]
+fn test_list_filter_for_str() {
+    let mut env = Environment::new();
+    env.add_template("test", "{{ 'あいう'|list }}").unwrap();
+    let tmpl = env.get_template("test").unwrap();
+    assert_eq!(tmpl.render(()).unwrap(), "[\"あ\", \"い\", \"う\"]");
+}
+
+#[test]
+fn test_list_literal() {
+    let mut env = Environment::new();
+    env.add_template(
+        "test.html",
+        "{% autoescape 'none' %}{{ [none, 'あ'] }}{% endautoescape %}",
+    )
+    .unwrap();
+    let tmpl = env.get_template("test.html").unwrap();
+    assert_eq!(tmpl.render(()).unwrap(), "[None, \"あ\"]");
+}
