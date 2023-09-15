@@ -358,4 +358,10 @@ mod tests {
     fn test_int_div_overflow() {
         _ = int_div(&Value::from(i128::MIN), &Value::from(-1i128));
     }
+
+    #[test]
+    #[should_panic]
+    fn test_neg_overflow() {
+        _ = neg(&Value::from(i128::MIN))
+    }
 }

@@ -1235,3 +1235,14 @@ mod builtins {
 
 #[cfg(feature = "builtins")]
 pub use self::builtins::*;
+
+#[cfg(tests)]
+mod test {
+    use super::*;
+
+    #[test]
+    #[should_panic]
+    fn test_abs_overflow() {
+        _ = abs(Value::from(i128::MIN));
+    }
+}
