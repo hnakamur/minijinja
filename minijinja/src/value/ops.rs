@@ -352,4 +352,10 @@ mod tests {
             Value::from("2342")
         );
     }
+
+    #[test]
+    #[should_panic]
+    fn test_int_div_overflow() {
+        _ = int_div(&Value::from(i128::MIN), &Value::from(-1i128));
+    }
 }
