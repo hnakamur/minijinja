@@ -303,6 +303,7 @@ impl<'source> CodeGenerator<'source> {
             }
             #[cfg(feature = "multi_template")]
             ast::Stmt::Import(import) => {
+                eprintln!("codegen imort");
                 self.add(Instruction::BeginCapture(CaptureMode::Discard));
                 self.add(Instruction::PushWith);
                 self.compile_expr(&import.expr);
@@ -314,6 +315,7 @@ impl<'source> CodeGenerator<'source> {
             }
             #[cfg(feature = "multi_template")]
             ast::Stmt::FromImport(from_import) => {
+                eprintln!("codegen from_imort");
                 self.add(Instruction::BeginCapture(CaptureMode::Discard));
                 self.add(Instruction::PushWith);
                 self.compile_expr(&from_import.expr);

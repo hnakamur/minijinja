@@ -172,6 +172,10 @@ impl<'env> Vm<'env> {
         macro_rules! recurse_loop {
             ($capture:expr) => {{
                 let jump_target = ctx_ok!(self.prepare_loop_recursion(state));
+                eprintln!(
+                    "recurse_loop capture={}, jump_target={}",
+                    $capture, jump_target
+                );
                 // the way this works is that we remember the next instruction
                 // as loop exit jump target.  Whenever a loop is pushed, it
                 // memorizes the value in `next_loop_iteration_jump` to jump
@@ -208,6 +212,8 @@ impl<'env> Vm<'env> {
                     continue;
                 }
             };
+            #[cfg(feature = "internal_debug")]
+            eprintln!("eval_impl pc={}, instr={:?}", pc, &instr);
 
             // if we only have two arguments that we pull from the stack, we
             // can assign them to a and b.  This slightly reduces the amount of
@@ -400,6 +406,7 @@ impl<'env> Vm<'env> {
                     if let Some(mut loop_ctx) = state.ctx.pop_frame().current_loop {
                         if let Some((target, end_capture)) = loop_ctx.current_recursion_jump.take()
                         {
+                            eprintln!("PopFrame, target={}, end_capture={}", target, end_capture);
                             pc = target;
                             if end_capture {
                                 stack.push(out.end_capture(state.auto_escape));
@@ -977,3 +984,14 @@ fn process_err(err: &mut Error, pc: usize, state: &State) {
         }
     }
 }
+
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
+
+//     #[test]
+//     fn test_derive_auto_escape() {
+//         let vm = Vm::new(Environment::new());
+//         vm.derive_auto_escape(Value::from(false), AutoEscape::Html)
+//     }
+// }

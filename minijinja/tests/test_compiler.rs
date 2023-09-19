@@ -1,5 +1,5 @@
 #![cfg(feature = "unstable_machinery")]
-use minijinja::machinery::{CodeGenerator, Instruction};
+use minijinja::machinery::{CodeGenerator, CompiledTemplate, Instruction};
 use minijinja::value::Value;
 
 #[test]
@@ -64,4 +64,30 @@ fn test_referenced_names_empty_bug() {
     let instructions = c.finish().0;
     let rv = instructions.get_referenced_names(0);
     assert!(rv.is_empty());
+}
+
+#[test]
+fn test_codegen() {
+    // insta::glob!("inputs/*.txt", |path| {
+    insta::glob!("inputs/loop_recursive.txt", |path| {
+        let contents = std::fs::read_to_string(path).unwrap();
+        let filename = path.file_name().unwrap().to_str().unwrap();
+        let keep_trailing_newline = false;
+
+        let template = match CompiledTemplate::new(
+            filename,
+            &contents,
+            Default::default(),
+            keep_trailing_newline,
+        ) {
+            Ok(template) => template,
+            Err(_) => return,
+        };
+        insta::with_settings!({
+            description => contents.trim_end(),
+            omit_expression => true,
+        }, {
+            insta::assert_debug_snapshot!((template.instructions, template.blocks));
+        });
+    });
 }

@@ -278,6 +278,7 @@ impl<'env> Context<'env> {
     /// Pushes a new layer.
     pub fn push_frame(&mut self, layer: Frame<'env>) -> Result<(), Error> {
         ok!(self.check_depth());
+        eprintln!("push_frame stack_len={}", self.stack.len());
         self.stack.push(layer);
         Ok(())
     }
@@ -285,6 +286,7 @@ impl<'env> Context<'env> {
     /// Pops the topmost layer.
     #[track_caller]
     pub fn pop_frame(&mut self) -> Frame {
+        eprintln!("pop_frame stack_len={}", self.stack.len());
         self.stack.pop().unwrap()
     }
 
