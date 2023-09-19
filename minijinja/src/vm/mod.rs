@@ -185,7 +185,6 @@ impl<'env> Vm<'env> {
                     out.begin_capture(CaptureMode::Capture);
                 }
                 pc = jump_target;
-                eprintln!("recurse_loop pc={}", pc);
                 continue;
             }};
         }
@@ -210,7 +209,6 @@ impl<'env> Vm<'env> {
                     };
                     out.end_capture(AutoEscape::None);
                     pc = 0;
-                    eprintln!("loop#1 pc=0");
                     continue;
                 }
             };
@@ -405,7 +403,6 @@ impl<'env> Vm<'env> {
                     ctx_ok!(state.ctx.push_frame(Frame::default()));
                 }
                 Instruction::PopFrame => {
-                    eprintln!("PopFrame calling pop_frame");
                     if let Some(mut loop_ctx) = state.ctx.pop_frame().current_loop {
                         if let Some((target, end_capture)) = loop_ctx.current_recursion_jump.take()
                         {
@@ -449,7 +446,6 @@ impl<'env> Vm<'env> {
                         Some(item) => stack.push(assert_valid!(item)),
                         None => {
                             pc = *jump_target;
-                            eprintln!("Iterate pc={}", pc);
                             continue;
                         }
                     };
@@ -460,21 +456,18 @@ impl<'env> Vm<'env> {
                 }
                 Instruction::Jump(jump_target) => {
                     pc = *jump_target;
-                    eprintln!("Jump pc={}", pc);
                     continue;
                 }
                 Instruction::JumpIfFalse(jump_target) => {
                     a = stack.pop();
                     if !a.is_true() {
                         pc = *jump_target;
-                        eprintln!("JumpIfFalse pc={}", pc);
                         continue;
                     }
                 }
                 Instruction::JumpIfFalseOrPop(jump_target) => {
                     if !stack.peek().is_true() {
                         pc = *jump_target;
-                        eprintln!("JumpIfFalseOrPop pc={}", pc);
                         continue;
                     } else {
                         stack.pop();
@@ -483,7 +476,6 @@ impl<'env> Vm<'env> {
                 Instruction::JumpIfTrueOrPop(jump_target) => {
                     if stack.peek().is_true() {
                         pc = *jump_target;
-                        eprintln!("JumpIfTrueOrPop pc={}", pc);
                         continue;
                     } else {
                         stack.pop();
@@ -764,7 +756,6 @@ impl<'env> Vm<'env> {
         let old_instructions = mem::replace(&mut state.instructions, block_stack.instructions());
         ok!(state.ctx.push_frame(Frame::default()));
         let rv = self.eval_state(state, out);
-        eprintln!("perform_super calling pop_frame");
         state.ctx.pop_frame();
         state.instructions = old_instructions;
         state.blocks.get_mut(name).unwrap().pop();
@@ -844,7 +835,6 @@ impl<'env> Vm<'env> {
                 mem::replace(&mut state.instructions, block_stack.instructions());
             state.ctx.push_frame(Frame::default())?;
             let rv = self.eval_state(state, out);
-            eprintln!("call_block calling pop_frame");
             state.ctx.pop_frame();
             state.instructions = old_instructions;
             state.current_block = old_block;
@@ -897,10 +887,6 @@ impl<'env> Vm<'env> {
             .map_or(0, |x| x.object.depth + 1);
         let recursive = flags & LOOP_FLAG_RECURSIVE != 0;
         let with_loop_var = flags & LOOP_FLAG_WITH_LOOP_VAR != 0;
-        eprintln!(
-            "push_loop pc={}, len={}, depth={}, recursive={}, with_loop_var={}",
-            pc, len, depth, recursive, with_loop_var
-        );
         ok!(state.ctx.push_frame(Frame {
             current_loop: Some(LoopState {
                 with_loop_var,
