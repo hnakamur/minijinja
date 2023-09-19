@@ -1,0 +1,14 @@
+---
+source: minijinja/tests/test_compiler.rs
+description: "{}\n---\nBefore\n{% include [\"missing_template1.txt\", \"missing_template2.txt\"] %}\nAfter"
+input_file: minijinja/tests/inputs/include_choice_none.txt
+---
+(
+    [
+        00000 | EmitRaw("{}\n---\nBefore\n")  [line 1],
+        00001 | LoadConst(["missing_template1.txt", "missing_template2.txt"])  [line 4],
+        00002 | Include(false),
+        00003 | EmitRaw("\nAfter"),
+    ],
+    {},
+)

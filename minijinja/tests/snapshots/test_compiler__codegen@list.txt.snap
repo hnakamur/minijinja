@@ -1,0 +1,14 @@
+---
+source: minijinja/tests/test_compiler.rs
+description: "{}\n---\n{{ [1, 2, 3]|length }}"
+input_file: minijinja/tests/inputs/list.txt
+---
+(
+    [
+        00000 | EmitRaw("{}\n---\n")  [line 1],
+        00001 | LoadConst([1, 2, 3])  [line 3],
+        00002 | ApplyFilter("length", 1, 0),
+        00003 | Emit,
+    ],
+    {},
+)

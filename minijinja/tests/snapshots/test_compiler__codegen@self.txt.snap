@@ -1,0 +1,20 @@
+---
+source: minijinja/tests/test_compiler.rs
+description: "{\n  \"var\": \"foobar\"\n}\n---\n1:[{% block title %}{{ var }}{% endblock %}]\n2:({{ self.title() }})"
+input_file: minijinja/tests/inputs/self.txt
+---
+(
+    [
+        00000 | EmitRaw("{\n  \"var\": \"foobar\"\n}\n---\n1:[")  [line 1],
+        00001 | CallBlock("title")  [line 5],
+        00002 | EmitRaw("]\n2:("),
+        00003 | CallBlock("title")  [line 6],
+        00004 | EmitRaw(")"),
+    ],
+    {
+        "title": [
+            00000 | Lookup("var")  [line 5],
+            00001 | Emit,
+        ],
+    },
+)

@@ -1,0 +1,14 @@
+---
+source: minijinja/tests/test_compiler.rs
+description: "{\n  \"template\": \"missing_template.txt\"\n}\n---\nBefore\n{% include template %}\nAfter"
+input_file: minijinja/tests/inputs/include_missing.txt
+---
+(
+    [
+        00000 | EmitRaw("{\n  \"template\": \"missing_template.txt\"\n}\n---\nBefore\n")  [line 1],
+        00001 | Lookup("template")  [line 6],
+        00002 | Include(false),
+        00003 | EmitRaw("\nAfter"),
+    ],
+    {},
+)

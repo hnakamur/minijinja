@@ -1,0 +1,23 @@
+---
+source: minijinja/tests/test_compiler.rs
+description: "{}\n---\n{% macro x() %}{{ x() }}{% endmacro %}\n{{ x() }}"
+input_file: minijinja/tests/inputs/err_self_macro_call.txt
+---
+(
+    [
+        00000 | EmitRaw("{}\n---\n")  [line 1],
+        00001 | Jump(5)  [line 3],
+        00002 | CallFunction("x", 0),
+        00003 | Emit,
+        00004 | Return,
+        00005 | Enclose("x"),
+        00006 | GetClosure,
+        00007 | LoadConst([]),
+        00008 | BuildMacro("x", 2, 0),
+        00009 | StoreLocal("x"),
+        00010 | EmitRaw("\n"),
+        00011 | CallFunction("x", 0)  [line 4],
+        00012 | Emit,
+    ],
+    {},
+)

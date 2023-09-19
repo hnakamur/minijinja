@@ -1,0 +1,12 @@
+---
+source: minijinja/tests/test_compiler.rs
+description: "{}\n---\n{{ super() }}"
+input_file: minijinja/tests/inputs/block_super_err.txt
+---
+(
+    [
+        00000 | EmitRaw("{}\n---\n")  [line 1],
+        00001 | FastSuper  [line 3],
+    ],
+    {},
+)

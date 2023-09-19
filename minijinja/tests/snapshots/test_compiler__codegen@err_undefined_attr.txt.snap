@@ -1,0 +1,14 @@
+---
+source: minijinja/tests/test_compiler.rs
+description: "{}\n---\n{{ undefined_value.attr }}"
+input_file: minijinja/tests/inputs/err_undefined_attr.txt
+---
+(
+    [
+        00000 | EmitRaw("{}\n---\n")  [line 1],
+        00001 | Lookup("undefined_value")  [line 3],
+        00002 | GetAttr("attr"),
+        00003 | Emit,
+    ],
+    {},
+)

@@ -1,0 +1,16 @@
+---
+source: minijinja/tests/test_compiler.rs
+description: "{}\n---\n{{ \"foo\"|upper|missingFilter|lower }}"
+input_file: minijinja/tests/inputs/err_missing_nested_filter.txt
+---
+(
+    [
+        00000 | EmitRaw("{}\n---\n")  [line 1],
+        00001 | LoadConst("foo")  [line 3],
+        00002 | ApplyFilter("upper", 1, 0),
+        00003 | ApplyFilter("missingFilter", 1, 1),
+        00004 | ApplyFilter("lower", 1, 2),
+        00005 | Emit,
+    ],
+    {},
+)

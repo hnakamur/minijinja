@@ -1,0 +1,13 @@
+---
+source: minijinja/tests/test_compiler.rs
+description: "{}\n---\n{% include \"self-include.txt\" %}"
+input_file: minijinja/tests/inputs/err_self_include.txt
+---
+(
+    [
+        00000 | EmitRaw("{}\n---\n")  [line 1],
+        00001 | LoadConst("self-include.txt")  [line 3],
+        00002 | Include(false),
+    ],
+    {},
+)

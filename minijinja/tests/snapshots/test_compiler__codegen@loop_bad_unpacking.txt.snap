@@ -1,0 +1,27 @@
+---
+source: minijinja/tests/test_compiler.rs
+description: "{\n  \"seq\": [\n    1,\n    2,\n    3\n  ]\n}\n---\n<ul>\n{% for a, b in seq %}\n  <li>{{ a }}: {{ b }}\n{% endfor %}\n</ul>"
+input_file: minijinja/tests/inputs/loop_bad_unpacking.txt
+---
+(
+    [
+        00000 | EmitRaw("{\n  \"seq\": [\n    1,\n    2,\n    3\n  ]\n}\n---\n<ul>\n")  [line 1],
+        00001 | Lookup("seq")  [line 10],
+        00002 | PushLoop(1),
+        00003 | Iterate(15),
+        00004 | UnpackList(2),
+        00005 | StoreLocal("a"),
+        00006 | StoreLocal("b"),
+        00007 | EmitRaw("\n  <li>"),
+        00008 | Lookup("a")  [line 11],
+        00009 | Emit,
+        00010 | EmitRaw(": "),
+        00011 | Lookup("b"),
+        00012 | Emit,
+        00013 | EmitRaw("\n"),
+        00014 | Jump(3),
+        00015 | PopFrame,
+        00016 | EmitRaw("\n</ul>")  [line 12],
+    ],
+    {},
+)

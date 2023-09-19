@@ -1,0 +1,16 @@
+---
+source: minijinja/tests/test_compiler.rs
+description: "{\n  \"value\": false\n}\n---\n{% if value %}\n  was true\n{% else %}\n  was false\n{% endif %}"
+input_file: minijinja/tests/inputs/if_cond_else.txt
+---
+(
+    [
+        00000 | EmitRaw("{\n  \"value\": false\n}\n---\n")  [line 1],
+        00001 | Lookup("value")  [line 5],
+        00002 | JumpIfFalse(5),
+        00003 | EmitRaw("\n  was true\n"),
+        00004 | Jump(6),
+        00005 | EmitRaw("\n  was false\n")  [line 7],
+    ],
+    {},
+)

@@ -1,0 +1,16 @@
+---
+source: minijinja/tests/test_compiler.rs
+description: "{\n  \"template\": \"layout_with_var.txt\"\n}\n---\n{% extends template %}\n{% set var = \"the value from the child\" %}"
+input_file: minijinja/tests/inputs/extends_set.txt
+---
+(
+    [
+        00000 | EmitRaw("{\n  \"template\": \"layout_with_var.txt\"\n}\n---\n")  [line 1],
+        00001 | Lookup("template")  [line 5],
+        00002 | LoadBlocks,
+        00003 | EmitRaw("\n"),
+        00004 | LoadConst("the value from the child")  [line 6],
+        00005 | StoreLocal("var"),
+    ],
+    {},
+)

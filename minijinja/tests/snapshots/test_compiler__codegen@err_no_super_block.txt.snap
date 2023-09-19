@@ -1,0 +1,18 @@
+---
+source: minijinja/tests/test_compiler.rs
+description: "{}\n---\n{% block body %}\n  There is no super block.\n  {{ super() }}\n{% endblock %}"
+input_file: minijinja/tests/inputs/err_no_super_block.txt
+---
+(
+    [
+        00000 | EmitRaw("{}\n---\n")  [line 1],
+        00001 | CallBlock("body")  [line 5],
+    ],
+    {
+        "body": [
+            00000 | EmitRaw("\n  There is no super block.\n  ")  [line 3],
+            00001 | FastSuper  [line 5],
+            00002 | EmitRaw("\n"),
+        ],
+    },
+)

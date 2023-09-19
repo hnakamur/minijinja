@@ -1,0 +1,15 @@
+---
+source: minijinja/tests/test_compiler.rs
+description: "{}\n---\n{{ foo(-[1, 2]) }}"
+input_file: minijinja/tests/inputs/err_bad_unary.txt
+---
+(
+    [
+        00000 | EmitRaw("{}\n---\n")  [line 1],
+        00001 | LoadConst([1, 2])  [line 3],
+        00002 | Neg,
+        00003 | CallFunction("foo", 1),
+        00004 | Emit,
+    ],
+    {},
+)

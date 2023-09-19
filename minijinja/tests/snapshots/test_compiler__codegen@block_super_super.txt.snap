@@ -1,0 +1,21 @@
+---
+source: minijinja/tests/test_compiler.rs
+description: "{}\n---\n{% extends \"simple2_layout.txt\" %}\n{% block title %}[{{ super() }}]{% endblock %}"
+input_file: minijinja/tests/inputs/block_super_super.txt
+---
+(
+    [
+        00000 | EmitRaw("{}\n---\n")  [line 1],
+        00001 | LoadConst("simple2_layout.txt")  [line 3],
+        00002 | LoadBlocks,
+        00003 | EmitRaw("\n"),
+        00004 | CallBlock("title")  [line 4],
+    ],
+    {
+        "title": [
+            00000 | EmitRaw("[")  [line 4],
+            00001 | FastSuper,
+            00002 | EmitRaw("]"),
+        ],
+    },
+)

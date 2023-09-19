@@ -1,0 +1,23 @@
+---
+source: minijinja/tests/test_compiler.rs
+description: "{\n  \"seq\": [\n    1,\n    2,\n    3\n  ]\n}\n---\n{%- for item in seq %}\n  - {{ item }}\n{%- else %}\n  should not happen\n{%- endfor %}"
+input_file: minijinja/tests/inputs/loop_else2.txt
+---
+(
+    [
+        00000 | EmitRaw("{\n  \"seq\": [\n    1,\n    2,\n    3\n  ]\n}\n---")  [line 1],
+        00001 | Lookup("seq")  [line 9],
+        00002 | PushLoop(1),
+        00003 | Iterate(9),
+        00004 | StoreLocal("item"),
+        00005 | EmitRaw("\n  - "),
+        00006 | Lookup("item")  [line 10],
+        00007 | Emit,
+        00008 | Jump(3),
+        00009 | PushDidNotIterate,
+        00010 | PopFrame,
+        00011 | JumpIfFalse(13),
+        00012 | EmitRaw("\n  should not happen")  [line 11],
+    ],
+    {},
+)

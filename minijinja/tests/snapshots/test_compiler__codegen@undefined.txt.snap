@@ -1,0 +1,16 @@
+---
+source: minijinja/tests/test_compiler.rs
+description: "{}\n---\n{{ none }}\n{{ undefined }}"
+input_file: minijinja/tests/inputs/undefined.txt
+---
+(
+    [
+        00000 | EmitRaw("{}\n---\n")  [line 1],
+        00001 | LoadConst(none)  [line 3],
+        00002 | Emit,
+        00003 | EmitRaw("\n"),
+        00004 | Lookup("undefined")  [line 4],
+        00005 | Emit,
+    ],
+    {},
+)

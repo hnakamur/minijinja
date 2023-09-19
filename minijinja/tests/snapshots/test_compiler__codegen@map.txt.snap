@@ -1,0 +1,14 @@
+---
+source: minijinja/tests/test_compiler.rs
+description: "{}\n---\n{{ {\"foo\":\"bar\"}.foo }}"
+input_file: minijinja/tests/inputs/map.txt
+---
+(
+    [
+        00000 | EmitRaw("{}\n---\n")  [line 1],
+        00001 | LoadConst({"foo": "bar"})  [line 3],
+        00002 | GetAttr("foo"),
+        00003 | Emit,
+    ],
+    {},
+)

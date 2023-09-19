@@ -1,0 +1,16 @@
+---
+source: minijinja/tests/test_compiler.rs
+description: "{\n  \"template\": \"simple_include.txt\"\n}\n---\nBefore\n{% include [\"missing_template.txt\", template] %}\nAfter"
+input_file: minijinja/tests/inputs/include_ignore_choice.txt
+---
+(
+    [
+        00000 | EmitRaw("{\n  \"template\": \"simple_include.txt\"\n}\n---\nBefore\n")  [line 1],
+        00001 | LoadConst("missing_template.txt")  [line 6],
+        00002 | Lookup("template"),
+        00003 | BuildList(2),
+        00004 | Include(false),
+        00005 | EmitRaw("\nAfter"),
+    ],
+    {},
+)

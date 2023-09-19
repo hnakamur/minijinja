@@ -1,0 +1,14 @@
+---
+source: minijinja/tests/test_compiler.rs
+description: "{\n  \"value\": 42\n}\n---\n{% if value %}\n  was true\n{% endif %}"
+input_file: minijinja/tests/inputs/if_cond.txt
+---
+(
+    [
+        00000 | EmitRaw("{\n  \"value\": 42\n}\n---\n")  [line 1],
+        00001 | Lookup("value")  [line 5],
+        00002 | JumpIfFalse(4),
+        00003 | EmitRaw("\n  was true\n"),
+    ],
+    {},
+)

@@ -1,0 +1,13 @@
+---
+source: minijinja/tests/test_compiler.rs
+description: "{}\n---\n{% extends \"self-extends.txt\" %}"
+input_file: minijinja/tests/inputs/err_self_extends.txt
+---
+(
+    [
+        00000 | EmitRaw("{}\n---\n")  [line 1],
+        00001 | LoadConst("self-extends.txt")  [line 3],
+        00002 | LoadBlocks,
+    ],
+    {},
+)

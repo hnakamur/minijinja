@@ -1,0 +1,20 @@
+---
+source: minijinja/tests/test_compiler.rs
+description: "{\n  \"one\": 1,\n  \"two\": 2,\n  \"three\": 3\n}\n---\n{% if two > one and two < three %}\n  test\n{% endif %}"
+input_file: minijinja/tests/inputs/cmp.txt
+---
+(
+    [
+        00000 | EmitRaw("{\n  \"one\": 1,\n  \"two\": 2,\n  \"three\": 3\n}\n---\n")  [line 1],
+        00001 | Lookup("two")  [line 7],
+        00002 | Lookup("one"),
+        00003 | Gt,
+        00004 | JumpIfFalseOrPop(8),
+        00005 | Lookup("two"),
+        00006 | Lookup("three"),
+        00007 | Lt,
+        00008 | JumpIfFalse(10),
+        00009 | EmitRaw("\n  test\n"),
+    ],
+    {},
+)

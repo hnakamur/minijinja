@@ -1,0 +1,20 @@
+---
+source: minijinja/tests/test_compiler.rs
+description: "{\n  \"value\": false,\n  \"other_value\": false\n}\n---\n{% if value %}\n  first branch\n{% elif other_value %}\n  second branch\n{% else %}\n  else\n{% endif %}"
+input_file: minijinja/tests/inputs/if_cond_elif.txt
+---
+(
+    [
+        00000 | EmitRaw("{\n  \"value\": false,\n  \"other_value\": false\n}\n---\n")  [line 1],
+        00001 | Lookup("value")  [line 6],
+        00002 | JumpIfFalse(5),
+        00003 | EmitRaw("\n  first branch\n"),
+        00004 | Jump(10),
+        00005 | Lookup("other_value")  [line 8],
+        00006 | JumpIfFalse(9),
+        00007 | EmitRaw("\n  second branch\n"),
+        00008 | Jump(10),
+        00009 | EmitRaw("\n  else\n")  [line 10],
+    ],
+    {},
+)

@@ -1,0 +1,14 @@
+---
+source: minijinja/tests/test_compiler.rs
+description: "{}\n---\nThis is {{ an_unknown_function() }}!"
+input_file: minijinja/tests/inputs/err_bad_call.txt
+---
+(
+    [
+        00000 | EmitRaw("{}\n---\nThis is ")  [line 1],
+        00001 | CallFunction("an_unknown_function", 0)  [line 3],
+        00002 | Emit,
+        00003 | EmitRaw("!"),
+    ],
+    {},
+)

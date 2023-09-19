@@ -1,0 +1,14 @@
+---
+source: minijinja/tests/test_compiler.rs
+description: "{}\n---\n{{ range(10001) }}"
+input_file: minijinja/tests/inputs/err_bad_range.txt
+---
+(
+    [
+        00000 | EmitRaw("{}\n---\n")  [line 1],
+        00001 | LoadConst(10001)  [line 3],
+        00002 | CallFunction("range", 1),
+        00003 | Emit,
+    ],
+    {},
+)
