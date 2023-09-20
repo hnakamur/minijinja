@@ -1,0 +1,22 @@
+---
+source: minijinja/tests/test_compiler.rs
+description: "{\n  \"var\": \"foo\"\n}\n---\n{% extends \"var_referencing_layout.txt\" %}\n\n{% block item_block %}\n  [{{ item }}]\n{% endblock %}"
+input_file: minijinja/tests/fragment-inputs/fragment_ref_parent.txt
+---
+(
+    [
+        00000 | EmitRaw("{\n  \"var\": \"foo\"\n}\n---\n")  [line 1],
+        00001 | LoadConst("var_referencing_layout.txt")  [line 5],
+        00002 | LoadBlocks,
+        00003 | EmitRaw("\n\n"),
+        00004 | CallBlock("item_block")  [line 8],
+    ],
+    {
+        "item_block": [
+            00000 | EmitRaw("\n  [")  [line 7],
+            00001 | Lookup("item")  [line 8],
+            00002 | Emit,
+            00003 | EmitRaw("]\n"),
+        ],
+    },
+)

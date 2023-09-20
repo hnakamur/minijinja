@@ -1,0 +1,23 @@
+---
+source: minijinja/tests/test_compiler.rs
+description: "{\n  \"var\": \"foo\"\n}\n---\n<title>{% block title %}Shouldn't show up{% endblock %}</title>\n{% block fragment %}{{ var }}{% endblock fragment %}\nAlso shouldn't show up"
+input_file: minijinja/tests/fragment-inputs/fragment_simple.txt
+---
+(
+    [
+        00000 | EmitRaw("{\n  \"var\": \"foo\"\n}\n---\n<title>")  [line 1],
+        00001 | CallBlock("title")  [line 5],
+        00002 | EmitRaw("</title>\n"),
+        00003 | CallBlock("fragment")  [line 6],
+        00004 | EmitRaw("\nAlso shouldn't show up"),
+    ],
+    {
+        "fragment": [
+            00000 | Lookup("var")  [line 6],
+            00001 | Emit,
+        ],
+        "title": [
+            00000 | EmitRaw("Shouldn't show up")  [line 5],
+        ],
+    },
+)
