@@ -68,8 +68,7 @@ fn test_referenced_names_empty_bug() {
 
 #[test]
 fn test_codegen() {
-    // insta::glob!("inputs/*", |path| {
-    insta::glob!("fragment-inputs/*", |path| {
+    insta::glob!("inputs/*", |path| {
         let contents = std::fs::read_to_string(path).unwrap();
         let filename = path.file_name().unwrap().to_str().unwrap();
         let keep_trailing_newline = false;
