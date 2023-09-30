@@ -88,3 +88,33 @@ pub(super) fn render_debug_info(
     write!(f, "{:-^1$}", "", 79).unwrap();
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_writeln() {
+        let title = " fo.txt ";
+        println!("{:-^1$}", title, 79);
+    }
+
+    #[test]
+    fn test_fmt_debug_str() {
+        assert_eq!("\"foo\"", format!("{:?}", "foo"));
+        assert_eq!("\"foo\"", format!("{:#?}", "foo"));
+    }
+
+    #[test]
+    fn test_fmt_display_str() {
+        assert_eq!("foo", format!("{}", "foo"));
+        assert_eq!("foo", format!("{:#}", "foo"));
+    }
+
+    #[test]
+    fn test_fmt_debug_bytes() {
+        assert_eq!("['f', 'o', 'o']", format!("{:?}", vec!['f', 'o', 'o']));
+        assert_eq!(
+            "[\n    'f',\n    'o',\n    'o',\n]",
+            format!("{:#?}", vec!['f', 'o', 'o'])
+        );
+    }
+}

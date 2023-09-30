@@ -1,0 +1,14 @@
+---
+source: minijinja/tests/test_parser.rs
+assertion_line: 14
+description: "{}\n---\n{% call 42 %}...{% endcall %}"
+input_file: minijinja/tests/parser-inputs/err_bad_call_block_call.txt
+---
+Err(
+    Error {
+        kind: SyntaxError,
+        detail: "expected call expression in call block, got constant",
+        name: "err_bad_call_block_call.txt",
+        line: 3,
+    },
+)

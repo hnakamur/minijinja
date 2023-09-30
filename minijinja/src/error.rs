@@ -54,6 +54,7 @@ struct ErrorRepr {
 
 impl fmt::Debug for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        eprintln!("fmt::Debug for Error, alternate={}", f.alternate());
         let mut err = f.debug_struct("Error");
         err.field("kind", &self.kind());
         if let Some(ref detail) = self.repr.detail {
@@ -190,6 +191,7 @@ impl fmt::Display for ErrorKind {
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        eprintln!("fmt::Display for Error, alternate={}", f.alternate());
         if let Some(ref detail) = self.repr.detail {
             ok!(write!(f, "{}: {}", self.kind(), detail));
         } else {
