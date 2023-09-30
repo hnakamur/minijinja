@@ -1,6 +1,5 @@
 ---
 source: minijinja/tests/test_templates.rs
-assertion_line: 79
 description: "{% for item in seq %}\n  {{ ((item + 4) * (3 - [])) + 4 - 2 }}\n{% endfor %}"
 info:
   seq:

@@ -69,6 +69,9 @@ fn test_referenced_names_empty_bug() {
 #[test]
 fn test_codegen() {
     insta::glob!("inputs/*", |path| {
+        if std::fs::metadata(path).unwrap().is_dir() {
+            return;
+        }
         let contents = std::fs::read_to_string(path).unwrap();
         let filename = path.file_name().unwrap().to_str().unwrap();
         let keep_trailing_newline = false;
